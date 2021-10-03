@@ -1,0 +1,36 @@
+{% include "header.html" %}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url({{ url_for('static', filename='img/about-bg.jpg')}})">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="page-heading">
+                    <h1>About Me</h1>
+                    <span class="subheading">This is what I do.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <p>So, recently i started my journey to explore Flask. And in the way i learned several other things! To put
+                it all in a nutshell i made this simple blogging website where any and everyone can write blogs, read
+                blogs, explore new ideas and be a part of this community</p>
+            <p>In this process i got deep knowledge about Flask architecture, jinja templating, SQLAlchemy, MYSQL,
+                securing the website and different sources, wtforms,Restful routing, Bootstrap in flask and so much
+                moree!!</p>
+            <p>Do send me a message in Contact me section... I would love to hear your reviews, opinions and suggestions
+                for this small project of mine</p>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+{% include "footer.html" %}
