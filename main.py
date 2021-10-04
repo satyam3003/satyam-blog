@@ -149,7 +149,6 @@ def register():
 
 @app.route('/login', methods=["POST", "GET"])
 def login():
-    error = None
     form = LoginForm()
     if form.validate_on_submit() and request.method == "POST":
         email = form.email.data
