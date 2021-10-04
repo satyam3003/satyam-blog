@@ -17,7 +17,6 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-print(os.environ.get("SECRET_KEY"))
 if os.environ.get("DATABASE_URL"):
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 else:
