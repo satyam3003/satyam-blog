@@ -293,7 +293,7 @@ def info(type):
 
         fulldb = db.session.query(db_name).all()
         r = [db_entry.to_dict() for db_entry in fulldb]
-        return jsonify(db_name=r)
+        return jsonify(data=r)
 
     else:
         return jsonify(response={"UnAuthorised User": "Go away stranger"}), 401
