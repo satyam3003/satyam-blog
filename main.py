@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, g, abort
+from flask import Flask, render_template, redirect, url_for, flash, request, g, abort, jsonify
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -51,6 +51,9 @@ class User(UserMixin, db.Model):
     posts = relationship("BlogPost", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
 
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,6 +64,9 @@ class Comment(db.Model):
 
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
     parent_post = relationship("BlogPost", back_populates="comments")
+
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
 # CONFIGURE TABLES
@@ -79,6 +85,9 @@ class BlogPost(db.Model):
 
     comments = relationship("Comment", back_populates="parent_post")
 
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 
 class Messages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -86,6 +95,9 @@ class Messages(db.Model):
     email = db.Column(db.String, nullable=False)
     contact = db.Column(db.String, nullable=True)
     message = db.Column(db.String, nullable=False)
+
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
 db.create_all()
@@ -236,6 +248,15 @@ def delete_post(post_id):
     return redirect(url_for('get_all_posts'))
 
 
+@app.route("/delete_comment/<int:post_id>/<int:comment_id>")
+@admin_only
+def delete_comment(post_id, comment_id):
+    comment_to_delete = Comment.query.get(comment_id)
+    db.session.delete(comment_to_delete)
+    db.session.commit()
+    return redirect(url_for('show_post', post_id=post_id))
+
+
 @app.route("/about")
 def about():
     return render_template("about.html")
@@ -257,5 +278,26 @@ def contact():
     return render_template("contact.html", form=form)
 
 
+@app.route("/information/<string:type>")
+def info(type):
+    key = request.args.get("key")
+    if key == os.environ.get("DB_KEY"):
+        if type == "user":
+            db_name = User
+        elif type == "message":
+            db_name = Messages
+        elif type == "comment":
+            db_name = Comment
+        else:
+            return jsonify(response={"error": "db not found search for user/message/comment"}), 404
+
+        fulldb = db.session.query(db_name).all()
+        r = [db_entry.to_dict() for db_entry in fulldb]
+        return jsonify(db_name=r)
+
+    else:
+        return jsonify(response={"UnAuthorised User": "Go away stranger"}), 401
+
+
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(port=5000, debug=True)
